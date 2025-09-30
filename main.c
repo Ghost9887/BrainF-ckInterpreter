@@ -7,12 +7,12 @@
 
 int memoryPointer = 0;
 int *memoryBlock;
+int bracketCount = 0;
 
 void fillMemoryBlock(int *memoryBlock);
 char *readFromFile(const char *fileName);
 char *readFromTerminal();
 void run(const char *source);
-void runSubString(const char *source, int startIndex);
 
 int main(int argc, char *argv[]){
   
@@ -70,10 +70,6 @@ char *readFromFile(const char *fileName){
   return buffer;
 }
 
-void runSubString(const char *source, int startIndex){
-  //TODO: figure this out
-}
-
 void run(const char *source){
   int length = strlen(source);
   if(length <= 0){
@@ -96,7 +92,43 @@ void run(const char *source){
         memoryBlock[memoryPointer]--;
         break;
       case '[':
-        runSubString(source, index);
+        if(memoryBlock[memoryPointer] == 0){
+          index++; 
+          while(true){
+            if(source[index] == '\0'){
+              printf("No closing bracket\n");
+              exit(1);
+            }
+            
+            if(source[index] == ']' && bracketCount == 0){
+              break; 
+            }
+            else if(source[index] == '['){
+              bracketCount++;
+            }
+            else if(source[index] == ']'){
+              bracketCount--;
+            }
+            index++;
+          }
+        }
+        break;
+      case ']':
+        if(memoryBlock[memoryPointer] != 0){
+          index--;
+          while(true){
+            if(source[index] == '[' && bracketCount == 0){
+              break;
+            }
+            else if(source[index] == '['){
+              bracketCount++;
+            }
+            else if(source[index] == ']'){
+              bracketCount--;
+            }
+            index--;
+          }
+        }
         break;
       case ',':
         char input;
